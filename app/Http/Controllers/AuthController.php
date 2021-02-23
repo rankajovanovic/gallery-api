@@ -12,10 +12,13 @@ class AuthController extends Controller
       'email' => $request->email,
       'password' => $request->password,
     ];
+
     $token = auth('api')->attempt($credentials);
+
     if (!$token) {
       return response()->json(['message' => 'Unauthenticated'], 401);
     }
+
     return [
       'token' => $token,
       'user' => auth('api')->user()
@@ -28,6 +31,7 @@ class AuthController extends Controller
     $data['password'] = Hash::make($data['password']);
     $user = User::create($data);
     $token = auth('api')->login($user);
+
     return [
       'token' => $token,
       'user' => $user
@@ -37,17 +41,20 @@ class AuthController extends Controller
   public function logout()
   {
     $result = auth('api')->logout();
+
     return response()->json(['success' => true]);
   }
 
   public function me()
   {
+
     return auth('api')->user();
   }
   
   public function refreshToken()
   {
     $token = auth('api')->refresh();
+    
     return [
       'token' => $token
     ];

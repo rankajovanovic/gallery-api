@@ -25,11 +25,11 @@ class RegisterRequest extends FormRequest
     {
         return [
             'email' => 'required|email|unique:users',
-            'password' => 'required|string|min:6',
+            'password' => 'required|string|min:6|regex:/.*[0-9].*/',
             "password_confirmation" => 'required|same:password',
             'first_name' => 'required|string',
             'last_name' => 'required|string',
-            //'terms_and_conditions' => 'boolean'
+            'terms_and_conditions' => 'required'
         ];
     }
 }
