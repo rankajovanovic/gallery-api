@@ -22,7 +22,7 @@ class ImageFactory extends Factory
     public function definition()
     {
         return [
-            'imageUrl' => $this->faker->imageUrl(). '.jpg',
+            'imageUrl' => $this->faker->imageUrl(1024, 480, 'cats'). '.jpg',
             'gallery_id' => \App\Models\Gallery::all()->random()->id,
         ];
     }

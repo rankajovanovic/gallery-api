@@ -23,7 +23,7 @@ class GalleryFactory extends Factory
     public function definition()
     {
         return [
-            'name' => $this->faker->word(3),
+            'name' => $this->faker->realText(15),
             'description' => $this->faker->realText(100),
             'user_id' => \App\Models\User::all()->random()->id
         ];

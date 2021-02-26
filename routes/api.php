@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\GalleryController;
 use  App\Http\Controllers\AuthController;
+use App\Http\Controllers\CommentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,7 +28,9 @@ Route::post("galleries", [GalleryController::class, 'store']);
 Route::get("/galleries/{id}", [GalleryController::class, 'show']);
 Route::put("/galleries/{id}", [GalleryController::class, 'update']);
 Route::delete("/galleries/{id}", [GalleryController::class, 'destroy']);
-
+Route::get("/my-galleries", [GalleryController::class, 'myGalleries']);
+Route::get("/author-galleries/{id}", [GalleryController::class, 'authorGalleries']);
+Route::post("/comments", [CommentController::class, 'store']);
 
 
 Route::post("/register", [AuthController::class, 'register']);

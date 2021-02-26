@@ -16,7 +16,7 @@ class CreateGalleriesTable extends Migration
         Schema::create('galleries', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->text('description')->nullable;
+            $table->text('description')->nullable();
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')
                 ->references('id')
@@ -34,9 +34,6 @@ class CreateGalleriesTable extends Migration
      */
     public function down()
     {
-        Schema::table('galleries', function (Blueprint $table) {
-            $table->dropForeign('galleries_user_id_foreign');
-            $table->dropColumn('user_id');
-        });
+        Schema::dropIfExists('galleries');
     }
 }

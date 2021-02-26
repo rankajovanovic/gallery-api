@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 
-class GalleriesTableSeeder extends Seeder
+class GalleriesSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -13,6 +13,6 @@ class GalleriesTableSeeder extends Seeder
      */
     public function run()
     {
-        \App\Models\Gallery::factory()->count(50)->create();
+        \App\Models\Gallery::factory()->count(10)->create();
     }
 }

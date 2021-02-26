@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Gallery;
 use Illuminate\Http\Request;
+use App\Http\Requests\GalleryRequest;
 
 class GalleryController extends Controller
 {
@@ -12,10 +13,25 @@ class GalleryController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $galleries = Gallery::all();
-        return response()->json($galleries);
+        $galleries = Gallery::with('user', 'images', 'comments')->limit($request->header('numberPerPage'))->get();
+        $galleriesQuery = Gallery::query();
+        $galleriesQuery->with('user', 'images', 'comments');
+        $search = $request->header('searchText');
+        $galleriesQuery->where( functioN($query) use ($search) {
+            $query->where('name', 'like', '%' . $search . '%')
+                ->orWhere('description', 'like', '%' . $search . '%')
+                ->orwhereHas('user', function($que) use ($search) {
+                    $que->where('first_name', 'like', '%' . $search . '%')
+                        ->orWhere('last_name', 'like', '%' . $search . '%');
+                });
+        });
+    
+        $galleries = $galleriesQuery->take($request->header('pagination'))->get();
+        $count = $galleriesQuery->count();
+    
+        return [$galleries, $count];
     }
 
     /**
@@ -34,12 +50,22 @@ class GalleryController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(GalleryRequest $request)
     {
         $data = $request->validated();
 
-        $newGallery = Movie::create($data);
-        return response()->json($newGallery);
+        $user = User::findOrFail($request['id']);
+        $user_id = $user->id;
+        $gallery= Gallery::create([
+            "name"=>$data['name'],
+            "description"=>$data['description'],
+            'user_id' => $user_id
+        ]);
+        foreach($data['listOfUrl'] as $imageURL) {
+            $gallery->addImages($source, $gallery['id']);
+        }
+        
+        return response()->json($gallery);
     }
 
     /**
@@ -48,9 +74,10 @@ class GalleryController extends Controller
      * @param  \App\Models\Gallery  $gallery
      * @return \Illuminate\Http\Response
      */
-    public function show(Gallery $gallery)
+    public function show($id)
     {
-        $gallery = Movie::findOrFail($id);
+        $gallery = Gallery::with('images', 'user', 'comments.user')->findOrFail($id);
+       
         return response()->json($gallery);
     }
 
@@ -92,5 +119,20 @@ class GalleryController extends Controller
         $gallery = Gallery::findOrFail($id);
         $gallery->delete();
         return response()->json($gallery);
+    }
+
+    public function myGalleries(Request $request)
+    {
+        $id = $request->input('user_id');
+        $galleries = Gallery::where('user_id', $id)->with('images', 'user')->get();
+
+        return response()->json($galleries);
+    }
+
+    public function authorGalleries($id)
+    {
+        $galleries = Gallery::where('user_id', $id)->with('images', 'user')->get();
+
+        return response()->json($galleries);
     }
 }
